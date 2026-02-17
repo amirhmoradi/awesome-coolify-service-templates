@@ -40,6 +40,8 @@ Here are the currently available service templates:
   [Link to .yaml](https://raw.githubusercontent.com/oregapam/awesome-coolify-service-templates/refs/heads/main/templates/compose/twentycrm.yaml)
 - [QuackBack](https://github.com/QuackbackIO/quackback) - Open-source customer feedback platform. Collect, organize, and act on user feedback.
   [Link to .yaml](https://raw.githubusercontent.com/oregapam/awesome-coolify-service-templates/refs/heads/main/templates/compose/quackback.yaml)
+- [Dify](https://github.com/langgenius/dify) - Open-source LLM app development platform with AI workflow, RAG pipeline, agent capabilities, and model management.
+  [Link to .yaml](https://raw.githubusercontent.com/oregapam/awesome-coolify-service-templates/refs/heads/main/templates/compose/dify.yaml)
 
 
 ## How to Use
@@ -55,6 +57,17 @@ Optional: Consider the notes (where available within the yaml files)
 8. If you need, update the configuration on the next screen at `Service Specific Configuration` section or at the `Environment Variables` sub-menu
 9. (Optional) Edit the random generated domain in `Services` section
 10. Click on `Deploy` and enjoy :)
+
+---
+
+## Creating Your Own Templates
+
+See the [Template Creation Guide](TEMPLATE_GUIDE.md) for detailed instructions on how to create custom Coolify service templates. The guide covers:
+
+- Template file structure and metadata
+- Coolify magic environment variables
+- Health checks and networking
+- Testing and submission
 
 ---
 
