@@ -114,8 +114,11 @@ x-shared-env: &shared-api-worker-env
   NOTION_CLIENT_SECRET: ${NOTION_CLIENT_SECRET:-}
   NOTION_CLIENT_ID: ${NOTION_CLIENT_ID:-}
   NOTION_INTERNAL_SECRET: ${NOTION_INTERNAL_SECRET:-}
-  # Mail (optional)
-  MAIL_TYPE: ${MAIL_TYPE:-resend}
+  # Mail (optional — set MAIL_TYPE to 'smtp' or 'resend' to enable)
+  # When MAIL_TYPE is empty, mail is disabled and Dify will show invite links instead.
+  # For SMTP: set MAIL_TYPE=smtp, SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD
+  # For Resend: set MAIL_TYPE=resend and RESEND_API_KEY
+  MAIL_TYPE: ${MAIL_TYPE:-}
   MAIL_DEFAULT_SEND_FROM: ${MAIL_DEFAULT_SEND_FROM:-}
   SMTP_SERVER: ${SMTP_SERVER:-}
   SMTP_PORT: ${SMTP_PORT:-465}
@@ -124,7 +127,7 @@ x-shared-env: &shared-api-worker-env
   SMTP_USE_TLS: ${SMTP_USE_TLS:-true}
   SMTP_OPPORTUNISTIC_TLS: ${SMTP_OPPORTUNISTIC_TLS:-false}
   RESEND_API_KEY: ${RESEND_API_KEY:-}
-  RESEND_API_URL: https://api.resend.com
+  RESEND_API_URL: ${RESEND_API_URL:-https://api.resend.com}
   # Indexing
   INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH: ${INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH:-1000}
   INVITE_EXPIRY_HOURS: ${INVITE_EXPIRY_HOURS:-72}
@@ -175,6 +178,7 @@ services:
   worker:
     image: langgenius/dify-api:latest
     environment:
+      SECRET_KEY: $SERVICE_PASSWORD_64_SECRETKEY
       <<: *shared-api-worker-env
       MODE: worker
     depends_on:
@@ -421,9 +425,9 @@ services:
                   include       /etc/nginx/mime.types;
                   default_type  application/octet-stream;
 
-                  log_format  main  '$$remote_addr - $$remote_user [$$time_local] "$$request" '
-                                    '$$status $$body_bytes_sent "$$http_referer" '
-                                    '"$$http_user_agent" "$$http_x_forwarded_for"';
+                  log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                                    '$status $body_bytes_sent "$http_referer" '
+                                    '"$http_user_agent" "$http_x_forwarded_for"';
 
                   access_log  /var/log/nginx/access.log  main;
 
@@ -438,9 +442,9 @@ services:
         target: /etc/nginx/proxy.conf.template
         read_only: true
         content: |
-          proxy_set_header Host $$host;
-          proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
-          proxy_set_header X-Forwarded-Proto $$scheme;
+          proxy_set_header Host $host;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
           proxy_http_version 1.1;
           proxy_set_header Connection "";
           proxy_buffering off;
@@ -452,10 +456,10 @@ services:
         read_only: true
         content: |
           #!/bin/bash
-          env_vars=$$(printenv | cut -d= -f1 | sed 's/^/$$/g' | paste -sd, -)
-          envsubst "$$env_vars" < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
-          envsubst "$$env_vars" < /etc/nginx/proxy.conf.template > /etc/nginx/proxy.conf
-          envsubst "$$env_vars" < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
+          env_vars=$(printenv | cut -d= -f1 | sed 's/^/$/g' | paste -sd, -)
+          envsubst "$env_vars" < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+          envsubst "$env_vars" < /etc/nginx/proxy.conf.template > /etc/nginx/proxy.conf
+          envsubst "$env_vars" < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
           exec nginx -g 'daemon off;'
       - type: bind
         source: ./nginx/default.conf.template
