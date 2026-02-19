@@ -10,10 +10,14 @@ services:
   memgraph:
     image: memgraph/memgraph-mage:latest
     restart: always
+    # NOTE: After deploying, click "Convert to Database" on this service
+    # in Coolify's UI to enable proxy options (public port) and backups.
+    # Memgraph is not yet in Coolify's auto-detected database image list.
+    #
     # Ports are NOT exposed directly on the host for security.
     # Bolt (7687) and monitoring (7444) are accessible within the Docker
-    # network (e.g. by Memgraph Lab). To expose them publicly, use
-    # Coolify's "Public Port" feature (Nginx TCP proxy) in the UI.
+    # network (e.g. by Memgraph Lab). To expose them publicly, convert
+    # to database first, then use the "Public Port" setting in the UI.
     expose:
       - "7687"
       - "7444"
