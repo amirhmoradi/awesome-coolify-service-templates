@@ -35,7 +35,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - echo 'RETURN 0;' | mgconsole || exit 1
+        - bash -c '</dev/tcp/localhost/7687'
       interval: 10s
       timeout: 5s
       retries: 5
@@ -46,6 +46,11 @@ services:
     restart: always
     environment:
       - SERVICE_FQDN_MEMGRAPHLAB_3000
+      # Memgraph database credentials (shown in Coolify config view).
+      # Lab does not support auto-connecting with credentials via env vars.
+      # Enter these credentials manually in Lab's connection dialog.
+      - SERVICE_USER_MEMGRAPHLAB=$SERVICE_USER_MEMGRAPH
+      - SERVICE_PASSWORD_MEMGRAPHLAB=$SERVICE_PASSWORD_MEMGRAPH
       # Memgraph connection
       - QUICK_CONNECT_MG_HOST=memgraph
       - QUICK_CONNECT_MG_PORT=7687
