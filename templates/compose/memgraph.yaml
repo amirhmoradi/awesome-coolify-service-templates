@@ -1,6 +1,7 @@
 # documentation: https://memgraph.com/docs/getting-started/install-memgraph/docker-compose
 # slogan: Open-source graph database built for real-time streaming and fast analysis with Cypher.
 # tags: database,graph,graph-database,cypher,memgraph,analytics,mage
+# type: database
 # logo: svgs/memgraph.svg
 # port: 3000
 # author: @oregapam
@@ -10,14 +11,9 @@ services:
   memgraph:
     image: memgraph/memgraph-mage:latest
     restart: always
-    # NOTE: After deploying, click "Convert to Database" on this service
-    # in Coolify's UI to enable proxy options (public port) and backups.
-    # Memgraph is not yet in Coolify's auto-detected database image list.
-    #
-    # Ports are NOT exposed directly on the host for security.
-    # Bolt (7687) and monitoring (7444) are accessible within the Docker
-    # network (e.g. by Memgraph Lab). To expose them publicly, convert
-    # to database first, then use the "Public Port" setting in the UI.
+    labels:
+      coolify.database: "true"
+      coolify.proxyPorts: "7687:bolt,7444:log-viewer"
     expose:
       - "7687"
       - "7444"
@@ -52,6 +48,8 @@ services:
   memgraph-lab:
     image: memgraph/lab:latest
     restart: always
+    labels:
+      coolify.database: "false"
     environment:
       - SERVICE_FQDN_MEMGRAPHLAB_3000
       # Memgraph database credentials (shown in Coolify config view).
