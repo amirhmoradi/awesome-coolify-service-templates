@@ -10,9 +10,13 @@ services:
   memgraph:
     image: memgraph/memgraph-mage:latest
     restart: always
-    ports:
-      - "7687:7687"
-      - "7444:7444"
+    # Ports are NOT exposed directly on the host for security.
+    # Bolt (7687) and monitoring (7444) are accessible within the Docker
+    # network (e.g. by Memgraph Lab). To expose them publicly, use
+    # Coolify's "Public Port" feature (Nginx TCP proxy) in the UI.
+    expose:
+      - "7687"
+      - "7444"
     volumes:
       - mg_lib:/var/lib/memgraph
       - mg_log:/var/log/memgraph
