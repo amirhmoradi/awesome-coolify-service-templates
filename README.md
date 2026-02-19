@@ -42,6 +42,8 @@ Here are the currently available service templates:
   [Link to .yaml](https://raw.githubusercontent.com/oregapam/awesome-coolify-service-templates/refs/heads/main/templates/compose/quackback.yaml)
 - [Dify](https://github.com/langgenius/dify) - Open-source LLM app development platform with AI workflow, RAG pipeline, agent capabilities, and model management.
   [Link to .yaml](https://raw.githubusercontent.com/oregapam/awesome-coolify-service-templates/refs/heads/main/templates/compose/dify.yaml)
+- [Memgraph](https://github.com/memgraph/memgraph) - Open-source graph database built for real-time streaming and fast analysis with Cypher. Includes MAGE algorithms and Memgraph Lab web UI.
+  [Link to .yaml](https://raw.githubusercontent.com/oregapam/awesome-coolify-service-templates/refs/heads/main/templates/compose/memgraph.yaml)
 
 
 ## How to Use
