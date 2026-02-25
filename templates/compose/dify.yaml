@@ -1,10 +1,9 @@
 # documentation: https://docs.dify.ai
 # slogan: Open-source LLM app development platform with AI workflow, RAG pipeline, agent capabilities, model management, and plugin ecosystem.
 # tags: ai,llm,rag,agent,openai,gpt,workflow,chatbot,plugins,redis,postgres,weaviate,dify
+# category: ai
 # logo: svgs/dify.svg
 # port: 80
-# author: @oregapam
-# repository: https://github.com/oregapam/awesome-coolify-service-templates
 
 # NOTE: After deployment, access Dify through the nginx service URL.
 # Visit /install on first launch to create the admin account.
@@ -325,6 +324,8 @@ services:
 
   db:
     image: postgres:15-alpine
+    labels:
+      coolify.database: "true"
     environment:
       POSTGRES_USER: $SERVICE_USER_POSTGRES
       POSTGRES_PASSWORD: $SERVICE_PASSWORD_POSTGRES
@@ -348,6 +349,8 @@ services:
 
   redis:
     image: redis:6-alpine
+    labels:
+      coolify.database: "true"
     environment:
       REDIS_PASSWORD: $SERVICE_PASSWORD_REDIS
       REDISCLI_AUTH: $SERVICE_PASSWORD_REDIS
@@ -362,6 +365,8 @@ services:
 
   weaviate:
     image: semitechnologies/weaviate:1.27.0
+    labels:
+      coolify.database: "true"
     volumes:
       - dify-weaviate-data:/var/lib/weaviate
     environment:
