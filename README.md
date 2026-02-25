@@ -44,7 +44,8 @@ Here are the currently available service templates:
   [Link to .yaml](https://raw.githubusercontent.com/oregapam/awesome-coolify-service-templates/refs/heads/main/templates/compose/dify.yaml)
 - [Memgraph](https://github.com/memgraph/memgraph) - Open-source graph database built for real-time streaming and fast analysis with Cypher. Includes MAGE algorithms and Memgraph Lab web UI.
   [Link to .yaml](https://raw.githubusercontent.com/oregapam/awesome-coolify-service-templates/refs/heads/main/templates/compose/memgraph.yaml)
-
+- [Vikunja](https://github.com/go-vikunja/vikunja) - The to-do app to organize your life.
+  [Link to .yaml (ParadeDB version)](https://raw.githubusercontent.com/oregapam/awesome-coolify-service-templates/refs/heads/main/templates/compose/vikunja.yaml)
 
 ## How to Use
 
