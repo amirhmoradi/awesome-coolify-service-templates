@@ -322,14 +322,10 @@ services:
     volumes:
       - dify-db-data:/var/lib/postgresql/data
       - type: bind
-        source: ./db-init-plugin.sh
-        target: /docker-entrypoint-initdb.d/10-create-plugin-db.sh
+        source: ./db-init-plugin.sql
+        target: /docker-entrypoint-initdb.d/10-create-plugin-db.sql
         content: |
-          #!/bin/bash
-          set -e
-          psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-            CREATE DATABASE dify_plugin;
-          EOSQL
+          CREATE DATABASE dify_plugin;
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "$SERVICE_USER_POSTGRES", "-d", "dify"]
       interval: 10s
@@ -369,9 +365,23 @@ services:
         target: /dependencies
         is_directory: true
       - type: bind
-        source: ./sandbox/conf
-        target: /conf
-        is_directory: true
+        source: ./sandbox/conf/config.yaml
+        target: /conf/config.yaml
+        content: |
+          app:
+            port: 8194
+            debug: false
+            key: dify-sandbox
+          max_workers: 4
+          max_requests: 50
+          worker_timeout: 5
+          python_path: /usr/local/bin/python3
+          enable_network: true
+          allowed_syscalls:
+          proxy:
+            socks5: ''
+            http: ''
+            https: ''
     networks:
       - ssrf_proxy_network
     healthcheck:
