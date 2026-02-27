@@ -1,0 +1,25 @@
+---
+description: Coolify and Coolify Enhanced template authoring rules
+globs: templates/compose/*.yaml
+alwaysApply: false
+---
+
+# Coolify Template Authoring
+
+When editing files under `templates/compose/*.yaml`:
+
+1. **Read first:** `TEMPLATE_GUIDE.md` (base Coolify) and [coolify-enhanced custom-templates.md](https://github.com/amirhmoradi/coolify-enhanced/blob/main/docs/custom-templates.md). Use `AGENTS.md` for quick reference.
+
+2. **Headers:** Include base metadata (`documentation`, `slogan`, `tags`, `port`, `author`, `repository`). For Coolify Enhanced add `category`, `logo` (e.g. `svgs/<name>.svg`), and for DB-only templates `# type: database`.
+
+3. **Magic variables:** Use `SERVICE_FQDN_<NAME>_<PORT>`, `SERVICE_USER_*`, `SERVICE_PASSWORD_*`, `SERVICE_PASSWORD_64_*`, `SERVICE_BASE64_*` as needed. For identifiers with a port use **hyphens**: `SERVICE_URL_MY-APP_8080` not underscores.
+
+4. **Database classification:** Per-service override with `labels: coolify.database: "true"` or `"false"`. Multi-port DBs: `coolify.proxyPorts: "7687:bolt,7444:log-viewer"` (label name case-sensitive).
+
+5. **Shared env:** Use `{{environment.SHARED_VARIABLE}}` for Coolify shared environment.
+
+6. **Bind mounts:** Use `content: |` in bind mounts to generate config files inline (no separate repo files). Use `is_directory: true` for directory creation.
+
+7. **Health:** Add healthchecks to all long-running services. Use `exclude_from_hc: true` for one-off/init containers.
+
+8. **Reference:** Complex multi-service patterns in `dify.yaml`; simple patterns in `pocketid-sqlite.yaml`, `vaultwarden-pg.yaml`.

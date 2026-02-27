@@ -589,6 +589,68 @@ Study these existing templates for patterns and best practices:
 
 ---
 
+## Coolify Enhanced Conventions
+
+This repository is used with [Coolify Enhanced](https://github.com/amirhmoradi/coolify-enhanced), which adds extra metadata and behavior on top of standard Coolify. When authoring or editing templates, follow both this guide and the [custom-templates documentation](https://github.com/amirhmoradi/coolify-enhanced/blob/main/docs/custom-templates.md).
+
+### Extra Header Metadata
+
+| Header       | Description |
+|-------------|-------------|
+| `category`  | Category for filtering (e.g. `ai`, `monitoring`, `cms`, `development`). Comma-separated for multiple. |
+| `logo`      | Path to logo: relative from repo root (e.g. `svgs/myservice.svg`) or absolute URL. SVG preferred. |
+| `env_file`  | Path to `.env` file (relative to template folder) for default env vars. |
+| `type`      | `database` or `application` — overrides automatic classification for all services. |
+| `ignore`    | Set to `true` to exclude this file from the template list (e.g. WIP templates). |
+| `minversion`| Minimum Coolify version required (e.g. `4.0.0-beta.300`). |
+
+### Database Classification
+
+- **Template-level:** Add `# type: database` to classify all services as databases (enables TCP proxy, backups, import).
+- **Per-service:** Use Docker label `coolify.database: "true"` or `"false"` to override per service. Per-service labels always win.
+- **Multi-port proxy:** For databases with multiple ports, use `coolify.proxyPorts: "7687:bolt,7444:log-viewer"` (label name is case-sensitive).
+
+### Shared Environment
+
+Reference values from Coolify's shared environment section:
+
+```yaml
+- MY_VAR={{environment.SHARED_VARIABLE}}
+```
+
+### Magic Variable Identifier Rule
+
+Identifiers that include a **port** must use **hyphens**, not underscores:
+
+```yaml
+# Correct
+- SERVICE_URL_MY-APP_8080
+
+# Wrong — Coolify will misparse the port
+- SERVICE_URL_MY_APP_8080
+```
+
+### Inline Config Files via Bind Mounts
+
+Use `content: |` in a bind mount to generate config files without separate repo files:
+
+```yaml
+volumes:
+  - type: bind
+    source: ./nginx.conf
+    target: /etc/nginx/nginx.conf
+    content: |
+      server { listen 80; }
+```
+
+Use `is_directory: true` when you need Coolify to create an empty directory.
+
+### Init / One-Off Containers
+
+For containers that run once and exit (migrations, permission fixups), use `exclude_from_hc: true` so Coolify does not wait for them to become healthy.
+
+---
+
 ## AI Agent Instructions
 
 When creating a new Coolify service template, follow this checklist:
@@ -597,7 +659,7 @@ When creating a new Coolify service template, follow this checklist:
 
 2. **Determine the architecture:** Identify what database(s), cache(s), and auxiliary services are needed.
 
-3. **Create the header metadata:** Include `documentation`, `slogan`, `tags`, `port`, `author`, and `repository`.
+3. **Create the header metadata:** Include `documentation`, `slogan`, `tags`, `port`, `author`, and `repository`. For Coolify Enhanced, also add `category` and `logo`.
 
 4. **Define services:**
    - Use official Docker images with specific version tags (not `latest` for databases)
@@ -606,9 +668,12 @@ When creating a new Coolify service template, follow this checklist:
    - Use `${VAR:?}` for required user inputs and `${VAR:-default}` for optional ones
    - Add health checks to every service
    - Use `depends_on` with `condition: service_healthy` for startup ordering
+   - For database services, add `labels: coolify.database: "true"`
 
 5. **Define volumes:** Use named volumes for all persistent data.
 
 6. **Test the template:** Deploy via Coolify's "Docker Compose Empty" option.
 
 7. **Update the README:** Add the new service to the list in `README.md`.
+
+8. **Review with AGENTS.md:** Check `AGENTS.md` for project-specific patterns and gotchas.
