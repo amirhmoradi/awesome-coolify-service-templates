@@ -1,6 +1,7 @@
 # documentation: https://meta.discourse.org/c/documentation/
 # slogan: A platform for community discussion. Free, open, simple.
 # tags: web,api,forum,community
+# logo: svgs/discourse.svg
 # port: 3000
 # author: @oregapam
 # repository: https://github.com/oregapam/awesome-coolify-service-templates

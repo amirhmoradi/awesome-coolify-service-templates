@@ -1,6 +1,7 @@
 # documentation: https://docs.twenty.com/developers/self-host/self-host
 # slogan: Building a modern alternative to Salesforce, powered by the community.
 # tags: crm,customer-relationship-management,saas,productivity,open-source
+# logo: svgs/twentycrm.svg
 # port: 3000
 # author: @oregapam
 # repository: https://github.com/oregapam/awesome-coolify-service-templates

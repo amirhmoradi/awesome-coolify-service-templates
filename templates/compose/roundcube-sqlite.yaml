@@ -1,6 +1,7 @@
 # documentation: https://github.com/roundcube/roundcubemail-docker
 # slogan: The Roundcube Webmail suite
 # tags: web,email,imap,smtp,php,mysql,postgresql
+# logo: svgs/roundcube-sqlite.svg
 # port: 80
 # author: @oregapam
 # repository: https://github.com/oregapam/awesome-coolify-service-templates

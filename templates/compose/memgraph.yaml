@@ -4,8 +4,8 @@
 # type: database
 # logo: svgs/memgraph.svg
 # port: 3000
-# author: @oregapam
-# repository: https://github.com/oregapam/awesome-coolify-service-templates
+# author: @amirhmoradi
+# repository: https://github.com/amirhmoradi/awesome-coolify-service-templates
 
 services:
   memgraph:

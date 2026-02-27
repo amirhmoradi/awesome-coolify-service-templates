@@ -1,6 +1,7 @@
 # documentation: https://vikunja.io/docs/
 # slogan: The to-do app to organize your life.
 # tags: todo,task-management,productivity,open-source
+# logo: svgs/vikunja.svg
 # port: 3456
 # author: @oregapam
 # repository: https://github.com/oregapam/awesome-coolify-service-templates

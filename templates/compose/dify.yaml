@@ -4,51 +4,65 @@
 # category: ai
 # logo: svgs/dify.svg
 # port: 80
+# author: @amirhmoradi
+# repository: https://github.com/amirhmoradi/awesome-coolify-service-templates
 
-# NOTE: After deployment, access Dify through the nginx service URL.
+# NOTE: After deployment, access Dify through the nginx service URL (the one with SERVICE_FQDN).
 # Visit /install on first launch to create the admin account.
-# The initial admin password is auto-generated — find it in the 'api' service environment variables.
+# The initial admin password is auto-generated — find it in the 'api' service environment as INIT_PASSWORD.
 # For production, configure VECTOR_STORE, external storage (S3, Azure, etc.), and mail settings.
 
 x-shared-env: &shared-api-worker-env
-  SECRET_KEY: $SERVICE_PASSWORD_64_SECRETKEY
+  CONSOLE_API_URL: ${CONSOLE_API_URL:-}
+  CONSOLE_WEB_URL: ${CONSOLE_WEB_URL:-}
+  SERVICE_API_URL: ${SERVICE_API_URL:-}
+  TRIGGER_URL: ${TRIGGER_URL:-http://localhost}
+  APP_API_URL: ${APP_API_URL:-}
+  APP_WEB_URL: ${APP_WEB_URL:-}
+  FILES_URL: ${FILES_URL:-}
+  INTERNAL_FILES_URL: ${INTERNAL_FILES_URL:-http://api:5001}
+  LANG: C.UTF-8
+  LC_ALL: C.UTF-8
+  PYTHONIOENCODING: utf-8
+  UV_CACHE_DIR: /tmp/.uv-cache
   LOG_LEVEL: ${LOG_LEVEL:-INFO}
-  LOG_FILE: ${LOG_FILE:-}
+  LOG_OUTPUT_FORMAT: ${LOG_OUTPUT_FORMAT:-text}
+  LOG_FILE: ${LOG_FILE:-/app/logs/server.log}
   LOG_FILE_MAX_SIZE: ${LOG_FILE_MAX_SIZE:-20}
   LOG_FILE_BACKUP_COUNT: ${LOG_FILE_BACKUP_COUNT:-5}
+  LOG_DATEFORMAT: ${LOG_DATEFORMAT:-%Y-%m-%d %H:%M:%S}
   LOG_TZ: ${LOG_TZ:-UTC}
   DEBUG: ${DEBUG:-false}
   FLASK_DEBUG: ${FLASK_DEBUG:-false}
+  ENABLE_REQUEST_LOGGING: ${ENABLE_REQUEST_LOGGING:-false}
+  SECRET_KEY: $SERVICE_PASSWORD_64_SECRETKEY
+  INIT_PASSWORD: $SERVICE_USER_INITPASSWORD
   DEPLOY_ENV: ${DEPLOY_ENV:-PRODUCTION}
-  MIGRATION_ENABLED: ${MIGRATION_ENABLED:-true}
   CHECK_UPDATE_URL: ${CHECK_UPDATE_URL:-https://updates.dify.ai}
   OPENAI_API_BASE: ${OPENAI_API_BASE:-https://api.openai.com/v1}
-  DIFY_BIND_ADDRESS: ${DIFY_BIND_ADDRESS:-0.0.0.0}
-  DIFY_PORT: ${DIFY_PORT:-5001}
+  MIGRATION_ENABLED: ${MIGRATION_ENABLED:-true}
+  FILES_ACCESS_TIMEOUT: ${FILES_ACCESS_TIMEOUT:-300}
+  ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-60}
+  REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS:-30}
+  APP_DEFAULT_ACTIVE_REQUESTS: ${APP_DEFAULT_ACTIVE_REQUESTS:-0}
+  APP_MAX_ACTIVE_REQUESTS: ${APP_MAX_ACTIVE_REQUESTS:-0}
+  APP_MAX_EXECUTION_TIME: ${APP_MAX_EXECUTION_TIME:-1200}
+  DIFY_BIND_ADDRESS: 0.0.0.0
+  DIFY_PORT: 5001
   SERVER_WORKER_AMOUNT: ${SERVER_WORKER_AMOUNT:-1}
   SERVER_WORKER_CLASS: ${SERVER_WORKER_CLASS:-gevent}
   SERVER_WORKER_CONNECTIONS: ${SERVER_WORKER_CONNECTIONS:-10}
-  GUNICORN_TIMEOUT: ${GUNICORN_TIMEOUT:-360}
   CELERY_WORKER_CLASS: ${CELERY_WORKER_CLASS:-}
+  GUNICORN_TIMEOUT: ${GUNICORN_TIMEOUT:-360}
   CELERY_WORKER_AMOUNT: ${CELERY_WORKER_AMOUNT:-}
   CELERY_AUTO_SCALE: ${CELERY_AUTO_SCALE:-false}
   CELERY_MAX_WORKERS: ${CELERY_MAX_WORKERS:-}
   CELERY_MIN_WORKERS: ${CELERY_MIN_WORKERS:-}
   API_TOOL_DEFAULT_CONNECT_TIMEOUT: ${API_TOOL_DEFAULT_CONNECT_TIMEOUT:-10}
   API_TOOL_DEFAULT_READ_TIMEOUT: ${API_TOOL_DEFAULT_READ_TIMEOUT:-60}
-  CONSOLE_WEB_URL: ${CONSOLE_WEB_URL:-}
-  CONSOLE_API_URL: ${CONSOLE_API_URL:-}
-  SERVICE_API_URL: ${SERVICE_API_URL:-}
-  APP_API_URL: ${APP_API_URL:-}
-  APP_WEB_URL: ${APP_WEB_URL:-}
-  FILES_URL: ${FILES_URL:-}
-  INTERNAL_FILES_URL: ${INTERNAL_FILES_URL:-http://api:5001}
-  TRIGGER_URL: ${TRIGGER_URL:-http://localhost}
-  FILES_ACCESS_TIMEOUT: ${FILES_ACCESS_TIMEOUT:-300}
-  ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-60}
-  REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS:-30}
-  APP_MAX_ACTIVE_REQUESTS: ${APP_MAX_ACTIVE_REQUESTS:-0}
-  APP_MAX_EXECUTION_TIME: ${APP_MAX_EXECUTION_TIME:-1200}
+  ENABLE_WEBSITE_JINAREADER: ${ENABLE_WEBSITE_JINAREADER:-true}
+  ENABLE_WEBSITE_FIRECRAWL: ${ENABLE_WEBSITE_FIRECRAWL:-true}
+  ENABLE_WEBSITE_WATERCRAWL: ${ENABLE_WEBSITE_WATERCRAWL:-true}
   DB_USERNAME: $SERVICE_USER_POSTGRES
   DB_PASSWORD: $SERVICE_PASSWORD_POSTGRES
   DB_HOST: ${DB_HOST:-db}
@@ -57,6 +71,7 @@ x-shared-env: &shared-api-worker-env
   SQLALCHEMY_POOL_SIZE: ${SQLALCHEMY_POOL_SIZE:-30}
   SQLALCHEMY_MAX_OVERFLOW: ${SQLALCHEMY_MAX_OVERFLOW:-10}
   SQLALCHEMY_POOL_RECYCLE: ${SQLALCHEMY_POOL_RECYCLE:-3600}
+  SQLALCHEMY_POOL_PRE_PING: ${SQLALCHEMY_POOL_PRE_PING:-false}
   SQLALCHEMY_ECHO: ${SQLALCHEMY_ECHO:-false}
   REDIS_HOST: ${REDIS_HOST:-redis}
   REDIS_PORT: ${REDIS_PORT:-6379}
@@ -69,15 +84,16 @@ x-shared-env: &shared-api-worker-env
   BROKER_USE_SSL: ${BROKER_USE_SSL:-false}
   WEB_API_CORS_ALLOW_ORIGINS: ${WEB_API_CORS_ALLOW_ORIGINS:-*}
   CONSOLE_CORS_ALLOW_ORIGINS: ${CONSOLE_CORS_ALLOW_ORIGINS:-*}
+  COOKIE_DOMAIN: ${COOKIE_DOMAIN:-}
   STORAGE_TYPE: ${STORAGE_TYPE:-opendal}
   OPENDAL_SCHEME: ${OPENDAL_SCHEME:-fs}
   OPENDAL_FS_ROOT: ${OPENDAL_FS_ROOT:-storage}
-  S3_USE_AWS_MANAGED_IAM: ${S3_USE_AWS_MANAGED_IAM:-false}
   S3_ENDPOINT: ${S3_ENDPOINT:-}
+  S3_REGION: ${S3_REGION:-us-east-1}
   S3_BUCKET_NAME: ${S3_BUCKET_NAME:-}
   S3_ACCESS_KEY: ${S3_ACCESS_KEY:-}
   S3_SECRET_KEY: ${S3_SECRET_KEY:-}
-  S3_REGION: ${S3_REGION:-us-east-1}
+  S3_USE_AWS_MANAGED_IAM: ${S3_USE_AWS_MANAGED_IAM:-false}
   AZURE_BLOB_ACCOUNT_NAME: ${AZURE_BLOB_ACCOUNT_NAME:-}
   AZURE_BLOB_ACCOUNT_KEY: ${AZURE_BLOB_ACCOUNT_KEY:-}
   AZURE_BLOB_CONTAINER_NAME: ${AZURE_BLOB_CONTAINER_NAME:-}
@@ -88,25 +104,34 @@ x-shared-env: &shared-api-worker-env
   WEAVIATE_ENDPOINT: ${WEAVIATE_ENDPOINT:-http://weaviate:8080}
   WEAVIATE_API_KEY: $SERVICE_PASSWORD_WEAVIATE
   WEAVIATE_GRPC_ENDPOINT: ${WEAVIATE_GRPC_ENDPOINT:-grpc://weaviate:50051}
-  PLUGIN_DAEMON_URL: ${PLUGIN_DAEMON_URL:-http://plugin_daemon:5002}
-  PLUGIN_DIFY_INNER_API_KEY: $SERVICE_PASSWORD_64_INNERAPIKEY
-  PLUGIN_DIFY_INNER_API_URL: ${PLUGIN_DIFY_INNER_API_URL:-http://api:5001}
-  PLUGIN_MAX_PACKAGE_SIZE: ${PLUGIN_MAX_PACKAGE_SIZE:-52428800}
-  PLUGIN_DAEMON_TIMEOUT: ${PLUGIN_DAEMON_TIMEOUT:-600.0}
-  ENDPOINT_URL_TEMPLATE: ${ENDPOINT_URL_TEMPLATE:-http://localhost/e/{hook_id}}
-  MARKETPLACE_ENABLED: ${MARKETPLACE_ENABLED:-true}
-  MARKETPLACE_API_URL: ${MARKETPLACE_API_URL:-https://marketplace.dify.ai}
-  FORCE_VERIFYING_SIGNATURE: ${FORCE_VERIFYING_SIGNATURE:-true}
   UPLOAD_FILE_SIZE_LIMIT: ${UPLOAD_FILE_SIZE_LIMIT:-15}
   UPLOAD_FILE_BATCH_LIMIT: ${UPLOAD_FILE_BATCH_LIMIT:-5}
   UPLOAD_IMAGE_FILE_SIZE_LIMIT: ${UPLOAD_IMAGE_FILE_SIZE_LIMIT:-10}
   UPLOAD_VIDEO_FILE_SIZE_LIMIT: ${UPLOAD_VIDEO_FILE_SIZE_LIMIT:-100}
   UPLOAD_AUDIO_FILE_SIZE_LIMIT: ${UPLOAD_AUDIO_FILE_SIZE_LIMIT:-50}
-  MULTIMODAL_SEND_FORMAT: ${MULTIMODAL_SEND_FORMAT:-base64}
   ETL_TYPE: ${ETL_TYPE:-dify}
   UNSTRUCTURED_API_URL: ${UNSTRUCTURED_API_URL:-}
   UNSTRUCTURED_API_KEY: ${UNSTRUCTURED_API_KEY:-}
-  CODE_EXECUTION_ENDPOINT: ${CODE_EXECUTION_ENDPOINT:-http://sandbox:8194}
+  SCARF_NO_ANALYTICS: ${SCARF_NO_ANALYTICS:-true}
+  MULTIMODAL_SEND_FORMAT: ${MULTIMODAL_SEND_FORMAT:-base64}
+  NOTION_INTEGRATION_TYPE: ${NOTION_INTEGRATION_TYPE:-public}
+  NOTION_CLIENT_SECRET: ${NOTION_CLIENT_SECRET:-}
+  NOTION_CLIENT_ID: ${NOTION_CLIENT_ID:-}
+  NOTION_INTERNAL_SECRET: ${NOTION_INTERNAL_SECRET:-}
+  MAIL_TYPE: ${MAIL_TYPE:-}
+  MAIL_DEFAULT_SEND_FROM: ${MAIL_DEFAULT_SEND_FROM:-}
+  RESEND_API_URL: ${RESEND_API_URL:-https://api.resend.com}
+  RESEND_API_KEY: ${RESEND_API_KEY:-}
+  SMTP_SERVER: ${SMTP_SERVER:-}
+  SMTP_PORT: ${SMTP_PORT:-465}
+  SMTP_USERNAME: ${SMTP_USERNAME:-}
+  SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+  SMTP_USE_TLS: ${SMTP_USE_TLS:-true}
+  SMTP_OPPORTUNISTIC_TLS: ${SMTP_OPPORTUNISTIC_TLS:-false}
+  INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH: ${INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH:-4000}
+  INVITE_EXPIRY_HOURS: ${INVITE_EXPIRY_HOURS:-72}
+  RESET_PASSWORD_TOKEN_EXPIRY_MINUTES: ${RESET_PASSWORD_TOKEN_EXPIRY_MINUTES:-5}
+  CODE_EXECUTION_ENDPOINT: http://sandbox:8194
   CODE_EXECUTION_API_KEY: $SERVICE_PASSWORD_64_SANDBOXKEY
   CODE_MAX_NUMBER: ${CODE_MAX_NUMBER:-9223372036854775807}
   CODE_MIN_NUMBER: ${CODE_MIN_NUMBER:--9223372036854775808}
@@ -116,42 +141,42 @@ x-shared-env: &shared-api-worker-env
   CODE_MAX_STRING_ARRAY_LENGTH: ${CODE_MAX_STRING_ARRAY_LENGTH:-30}
   CODE_MAX_OBJECT_ARRAY_LENGTH: ${CODE_MAX_OBJECT_ARRAY_LENGTH:-30}
   CODE_MAX_NUMBER_ARRAY_LENGTH: ${CODE_MAX_NUMBER_ARRAY_LENGTH:-1000}
+  CODE_EXECUTION_CONNECT_TIMEOUT: ${CODE_EXECUTION_CONNECT_TIMEOUT:-10}
+  CODE_EXECUTION_READ_TIMEOUT: ${CODE_EXECUTION_READ_TIMEOUT:-60}
+  CODE_EXECUTION_WRITE_TIMEOUT: ${CODE_EXECUTION_WRITE_TIMEOUT:-10}
   TEMPLATE_TRANSFORM_MAX_LENGTH: ${TEMPLATE_TRANSFORM_MAX_LENGTH:-400000}
   WORKFLOW_MAX_EXECUTION_STEPS: ${WORKFLOW_MAX_EXECUTION_STEPS:-500}
   WORKFLOW_MAX_EXECUTION_TIME: ${WORKFLOW_MAX_EXECUTION_TIME:-1200}
   WORKFLOW_CALL_MAX_DEPTH: ${WORKFLOW_CALL_MAX_DEPTH:-5}
   MAX_VARIABLE_SIZE: ${MAX_VARIABLE_SIZE:-204800}
   WORKFLOW_FILE_UPLOAD_LIMIT: ${WORKFLOW_FILE_UPLOAD_LIMIT:-10}
-  SSRF_PROXY_HTTP_URL: ${SSRF_PROXY_HTTP_URL:-http://ssrf_proxy:3128}
-  SSRF_PROXY_HTTPS_URL: ${SSRF_PROXY_HTTPS_URL:-http://ssrf_proxy:3128}
+  HTTP_REQUEST_NODE_MAX_BINARY_SIZE: ${HTTP_REQUEST_NODE_MAX_BINARY_SIZE:-10485760}
+  HTTP_REQUEST_NODE_MAX_TEXT_SIZE: ${HTTP_REQUEST_NODE_MAX_TEXT_SIZE:-1048576}
+  RESPECT_XFORWARD_HEADERS_ENABLED: ${RESPECT_XFORWARD_HEADERS_ENABLED:-false}
+  SSRF_PROXY_HTTP_URL: http://ssrf_proxy:3128
+  SSRF_PROXY_HTTPS_URL: http://ssrf_proxy:3128
   SSRF_DEFAULT_TIME_OUT: ${SSRF_DEFAULT_TIME_OUT:-5}
   SSRF_DEFAULT_CONNECT_TIME_OUT: ${SSRF_DEFAULT_CONNECT_TIME_OUT:-5}
   SSRF_DEFAULT_READ_TIME_OUT: ${SSRF_DEFAULT_READ_TIME_OUT:-5}
   SSRF_DEFAULT_WRITE_TIME_OUT: ${SSRF_DEFAULT_WRITE_TIME_OUT:-5}
-  NOTION_INTEGRATION_TYPE: ${NOTION_INTEGRATION_TYPE:-public}
-  NOTION_CLIENT_SECRET: ${NOTION_CLIENT_SECRET:-}
-  NOTION_CLIENT_ID: ${NOTION_CLIENT_ID:-}
-  NOTION_INTERNAL_SECRET: ${NOTION_INTERNAL_SECRET:-}
-  MAIL_TYPE: ${MAIL_TYPE:-}
-  MAIL_DEFAULT_SEND_FROM: ${MAIL_DEFAULT_SEND_FROM:-}
-  SMTP_SERVER: ${SMTP_SERVER:-}
-  SMTP_PORT: ${SMTP_PORT:-465}
-  SMTP_USERNAME: ${SMTP_USERNAME:-}
-  SMTP_PASSWORD: ${SMTP_PASSWORD:-}
-  SMTP_USE_TLS: ${SMTP_USE_TLS:-true}
-  SMTP_OPPORTUNISTIC_TLS: ${SMTP_OPPORTUNISTIC_TLS:-false}
-  RESEND_API_KEY: ${RESEND_API_KEY:-}
-  RESEND_API_URL: ${RESEND_API_URL:-https://api.resend.com}
-  INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH: ${INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH:-4000}
-  INVITE_EXPIRY_HOURS: ${INVITE_EXPIRY_HOURS:-72}
-  RESET_PASSWORD_TOKEN_EXPIRY_MINUTES: ${RESET_PASSWORD_TOKEN_EXPIRY_MINUTES:-5}
-  ENABLE_WEBSITE_JINAREADER: ${ENABLE_WEBSITE_JINAREADER:-true}
-  ENABLE_WEBSITE_FIRECRAWL: ${ENABLE_WEBSITE_FIRECRAWL:-true}
-  ENABLE_WEBSITE_WATERCRAWL: ${ENABLE_WEBSITE_WATERCRAWL:-true}
+  LOOP_NODE_MAX_COUNT: ${LOOP_NODE_MAX_COUNT:-100}
+  MAX_TOOLS_NUM: ${MAX_TOOLS_NUM:-10}
+  MAX_PARALLEL_LIMIT: ${MAX_PARALLEL_LIMIT:-10}
+  MAX_ITERATIONS_NUM: ${MAX_ITERATIONS_NUM:-99}
+  TEXT_GENERATION_TIMEOUT_MS: ${TEXT_GENERATION_TIMEOUT_MS:-60000}
+  ALLOW_UNSAFE_DATA_SCHEME: ${ALLOW_UNSAFE_DATA_SCHEME:-false}
+  MAX_TREE_DEPTH: ${MAX_TREE_DEPTH:-50}
+  PLUGIN_DAEMON_URL: http://plugin_daemon:5002
+  PLUGIN_MAX_PACKAGE_SIZE: ${PLUGIN_MAX_PACKAGE_SIZE:-52428800}
+  PLUGIN_DIFY_INNER_API_KEY: $SERVICE_PASSWORD_64_INNERAPIKEY
+  PLUGIN_DIFY_INNER_API_URL: http://api:5001
+  PLUGIN_DAEMON_TIMEOUT: ${PLUGIN_DAEMON_TIMEOUT:-600.0}
+  ENDPOINT_URL_TEMPLATE: ${ENDPOINT_URL_TEMPLATE:-http://localhost/e/{hook_id}}
+  MARKETPLACE_ENABLED: ${MARKETPLACE_ENABLED:-true}
+  MARKETPLACE_API_URL: ${MARKETPLACE_API_URL:-https://marketplace.dify.ai}
+  FORCE_VERIFYING_SIGNATURE: ${FORCE_VERIFYING_SIGNATURE:-true}
 
 services:
-  # ============ Init Container ============
-
   init_permissions:
     image: busybox:latest
     command:
@@ -171,20 +196,17 @@ services:
     restart: "no"
     exclude_from_hc: true
 
-  # ============ Core Services ============
-
   api:
     image: langgenius/dify-api:1.13.0
     environment:
       <<: *shared-api-worker-env
       MODE: api
-      INIT_PASSWORD: $SERVICE_USER_INITPASSWORD
-      INNER_API_KEY_FOR_PLUGIN: $SERVICE_PASSWORD_64_INNERAPIKEY
-      PLUGIN_REMOTE_INSTALL_HOST: ${EXPOSE_PLUGIN_DEBUGGING_HOST:-0.0.0.0}
-      PLUGIN_REMOTE_INSTALL_PORT: ${EXPOSE_PLUGIN_DEBUGGING_PORT:-5003}
       SENTRY_DSN: ${API_SENTRY_DSN:-}
       SENTRY_TRACES_SAMPLE_RATE: ${API_SENTRY_TRACES_SAMPLE_RATE:-1.0}
       SENTRY_PROFILES_SAMPLE_RATE: ${API_SENTRY_PROFILES_SAMPLE_RATE:-1.0}
+      PLUGIN_REMOTE_INSTALL_HOST: ${EXPOSE_PLUGIN_DEBUGGING_HOST:-0.0.0.0}
+      PLUGIN_REMOTE_INSTALL_PORT: ${EXPOSE_PLUGIN_DEBUGGING_PORT:-5003}
+      INNER_API_KEY_FOR_PLUGIN: $SERVICE_PASSWORD_64_INNERAPIKEY
     depends_on:
       init_permissions:
         condition: service_completed_successfully
@@ -209,10 +231,10 @@ services:
     environment:
       <<: *shared-api-worker-env
       MODE: worker
-      INNER_API_KEY_FOR_PLUGIN: $SERVICE_PASSWORD_64_INNERAPIKEY
       SENTRY_DSN: ${API_SENTRY_DSN:-}
       SENTRY_TRACES_SAMPLE_RATE: ${API_SENTRY_TRACES_SAMPLE_RATE:-1.0}
       SENTRY_PROFILES_SAMPLE_RATE: ${API_SENTRY_PROFILES_SAMPLE_RATE:-1.0}
+      INNER_API_KEY_FOR_PLUGIN: $SERVICE_PASSWORD_64_INNERAPIKEY
     depends_on:
       init_permissions:
         condition: service_completed_successfully
@@ -280,48 +302,6 @@ services:
       retries: 3
       start_period: 40s
 
-  # ============ Plugin Daemon ============
-
-  plugin_daemon:
-    image: langgenius/dify-plugin-daemon:0.5.3-local
-    environment:
-      <<: *shared-api-worker-env
-      DB_DATABASE: ${DB_PLUGIN_DATABASE:-dify_plugin}
-      SERVER_PORT: ${PLUGIN_DAEMON_PORT:-5002}
-      SERVER_KEY: $SERVICE_PASSWORD_64_PLUGINDAEMONKEY
-      MAX_PLUGIN_PACKAGE_SIZE: ${PLUGIN_MAX_PACKAGE_SIZE:-52428800}
-      PPROF_ENABLED: ${PLUGIN_PPROF_ENABLED:-false}
-      DIFY_INNER_API_URL: ${PLUGIN_DIFY_INNER_API_URL:-http://api:5001}
-      DIFY_INNER_API_KEY: $SERVICE_PASSWORD_64_INNERAPIKEY
-      PLUGIN_REMOTE_INSTALLING_HOST: ${PLUGIN_DEBUGGING_HOST:-0.0.0.0}
-      PLUGIN_REMOTE_INSTALLING_PORT: ${PLUGIN_DEBUGGING_PORT:-5003}
-      PLUGIN_WORKING_PATH: ${PLUGIN_WORKING_PATH:-/app/storage/cwd}
-      PYTHON_ENV_INIT_TIMEOUT: ${PLUGIN_PYTHON_ENV_INIT_TIMEOUT:-120}
-      PLUGIN_MAX_EXECUTION_TIMEOUT: ${PLUGIN_MAX_EXECUTION_TIMEOUT:-600}
-      PLUGIN_STDIO_BUFFER_SIZE: ${PLUGIN_STDIO_BUFFER_SIZE:-1024}
-      PLUGIN_STDIO_MAX_BUFFER_SIZE: ${PLUGIN_STDIO_MAX_BUFFER_SIZE:-5242880}
-      PIP_MIRROR_URL: ${PIP_MIRROR_URL:-}
-      PLUGIN_STORAGE_TYPE: ${PLUGIN_STORAGE_TYPE:-local}
-      PLUGIN_STORAGE_LOCAL_ROOT: ${PLUGIN_STORAGE_LOCAL_ROOT:-/app/storage}
-      PLUGIN_INSTALLED_PATH: ${PLUGIN_INSTALLED_PATH:-plugin}
-      PLUGIN_PACKAGE_CACHE_PATH: ${PLUGIN_PACKAGE_CACHE_PATH:-plugin_packages}
-      PLUGIN_MEDIA_CACHE_PATH: ${PLUGIN_MEDIA_CACHE_PATH:-assets}
-      SENTRY_ENABLED: ${PLUGIN_SENTRY_ENABLED:-false}
-      SENTRY_DSN: ${PLUGIN_SENTRY_DSN:-}
-    depends_on:
-      db:
-        condition: service_healthy
-    volumes:
-      - dify-plugin-daemon:/app/storage
-    healthcheck:
-      test: ["CMD-SHELL", "bash -c ':> /dev/tcp/127.0.0.1/5002' || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
-
-  # ============ Data Services ============
-
   db:
     image: postgres:15-alpine
     labels:
@@ -341,6 +321,15 @@ services:
                -c 'idle_in_transaction_session_timeout=${POSTGRES_IDLE_IN_TRANSACTION_SESSION_TIMEOUT:-0}'
     volumes:
       - dify-db-data:/var/lib/postgresql/data
+      - type: bind
+        source: ./db-init-plugin.sh
+        target: /docker-entrypoint-initdb.d/10-create-plugin-db.sh
+        content: |
+          #!/bin/bash
+          set -e
+          psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+            CREATE DATABASE dify_plugin;
+          EOSQL
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "$SERVICE_USER_POSTGRES", "-d", "dify"]
       interval: 10s
@@ -362,33 +351,6 @@ services:
       interval: 5s
       timeout: 10s
       retries: 20
-
-  weaviate:
-    image: semitechnologies/weaviate:1.27.0
-    labels:
-      coolify.database: "true"
-    volumes:
-      - dify-weaviate-data:/var/lib/weaviate
-    environment:
-      PERSISTENCE_DATA_PATH: ${WEAVIATE_PERSISTENCE_DATA_PATH:-/var/lib/weaviate}
-      QUERY_DEFAULTS_LIMIT: ${WEAVIATE_QUERY_DEFAULTS_LIMIT:-25}
-      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: ${WEAVIATE_AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED:-false}
-      DEFAULT_VECTORIZER_MODULE: ${WEAVIATE_DEFAULT_VECTORIZER_MODULE:-none}
-      CLUSTER_HOSTNAME: ${WEAVIATE_CLUSTER_HOSTNAME:-node1}
-      AUTHENTICATION_APIKEY_ENABLED: ${WEAVIATE_AUTHENTICATION_APIKEY_ENABLED:-true}
-      AUTHENTICATION_APIKEY_ALLOWED_KEYS: $SERVICE_PASSWORD_WEAVIATE
-      AUTHENTICATION_APIKEY_USERS: $SERVICE_USER_WEAVIATE
-      AUTHORIZATION_ADMINLIST_ENABLED: ${WEAVIATE_AUTHORIZATION_ADMINLIST_ENABLED:-true}
-      AUTHORIZATION_ADMINLIST_USERS: $SERVICE_USER_WEAVIATE
-      DISABLE_TELEMETRY: ${WEAVIATE_DISABLE_TELEMETRY:-false}
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/v1/.well-known/live"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
-  # ============ Security & Infrastructure ============
 
   sandbox:
     image: langgenius/dify-sandbox:0.2.12
@@ -419,6 +381,45 @@ services:
       retries: 10
       start_period: 10s
 
+  plugin_daemon:
+    image: langgenius/dify-plugin-daemon:0.5.3-local
+    environment:
+      <<: *shared-api-worker-env
+      DB_DATABASE: ${DB_PLUGIN_DATABASE:-dify_plugin}
+      SERVER_PORT: ${PLUGIN_DAEMON_PORT:-5002}
+      SERVER_KEY: $SERVICE_PASSWORD_64_PLUGINDAEMONKEY
+      MAX_PLUGIN_PACKAGE_SIZE: ${PLUGIN_MAX_PACKAGE_SIZE:-52428800}
+      PPROF_ENABLED: ${PLUGIN_PPROF_ENABLED:-false}
+      DIFY_INNER_API_URL: http://api:5001
+      DIFY_INNER_API_KEY: $SERVICE_PASSWORD_64_INNERAPIKEY
+      PLUGIN_REMOTE_INSTALLING_HOST: ${PLUGIN_DEBUGGING_HOST:-0.0.0.0}
+      PLUGIN_REMOTE_INSTALLING_PORT: ${PLUGIN_DEBUGGING_PORT:-5003}
+      PLUGIN_WORKING_PATH: ${PLUGIN_WORKING_PATH:-/app/storage/cwd}
+      FORCE_VERIFYING_SIGNATURE: ${FORCE_VERIFYING_SIGNATURE:-true}
+      PYTHON_ENV_INIT_TIMEOUT: ${PLUGIN_PYTHON_ENV_INIT_TIMEOUT:-120}
+      PLUGIN_MAX_EXECUTION_TIMEOUT: ${PLUGIN_MAX_EXECUTION_TIMEOUT:-600}
+      PLUGIN_STDIO_BUFFER_SIZE: ${PLUGIN_STDIO_BUFFER_SIZE:-1024}
+      PLUGIN_STDIO_MAX_BUFFER_SIZE: ${PLUGIN_STDIO_MAX_BUFFER_SIZE:-5242880}
+      PIP_MIRROR_URL: ${PIP_MIRROR_URL:-}
+      PLUGIN_STORAGE_TYPE: ${PLUGIN_STORAGE_TYPE:-local}
+      PLUGIN_STORAGE_LOCAL_ROOT: ${PLUGIN_STORAGE_LOCAL_ROOT:-/app/storage}
+      PLUGIN_INSTALLED_PATH: ${PLUGIN_INSTALLED_PATH:-plugin}
+      PLUGIN_PACKAGE_CACHE_PATH: ${PLUGIN_PACKAGE_CACHE_PATH:-plugin_packages}
+      PLUGIN_MEDIA_CACHE_PATH: ${PLUGIN_MEDIA_CACHE_PATH:-assets}
+      SENTRY_ENABLED: ${PLUGIN_SENTRY_ENABLED:-false}
+      SENTRY_DSN: ${PLUGIN_SENTRY_DSN:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - dify-plugin-daemon:/app/storage
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c ':> /dev/tcp/127.0.0.1/5002' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
   ssrf_proxy:
     image: ubuntu/squid:latest
     volumes:
@@ -447,6 +448,8 @@ services:
           acl Safe_ports port 591
           acl Safe_ports port 777
           acl CONNECT method CONNECT
+          acl allowed_domains dstdomain .marketplace.dify.ai
+          http_access allow allowed_domains
           http_access deny !Safe_ports
           http_access deny CONNECT !SSL_ports
           http_access allow localhost manager
@@ -455,7 +458,8 @@ services:
           include /etc/squid/conf.d/*.conf
           http_access deny all
 
-          http_port 3128
+          ################################## Proxy Server ################################
+          http_port ${HTTP_PORT}
           coredump_dir ${COREDUMP_DIR}
           refresh_pattern ^ftp:		1440	20%	10080
           refresh_pattern ^gopher:	1440	0%	1440
@@ -466,10 +470,39 @@ services:
           refresh_pattern \/(Translation-.*)(|\.bz2|\.gz|\.xz)$ 0 0% 0 refresh-ims
           refresh_pattern .		0	20%	4320
 
-          http_port 3129 accel vhost
+          ################################## Reverse Proxy To Sandbox ################################
+          http_port ${REVERSE_PROXY_PORT} accel vhost
           cache_peer ${SANDBOX_HOST} parent ${SANDBOX_PORT} 0 no-query originserver
           acl src_all src all
           http_access allow src_all
+
+          client_request_buffer_max_size 100 MB
+
+          ################################## Performance & Concurrency ###############################
+          max_filedescriptors 65536
+          connect_timeout 30 seconds
+          request_timeout 2 minutes
+          read_timeout 2 minutes
+          client_lifetime 5 minutes
+          shutdown_lifetime 30 seconds
+          server_persistent_connections on
+          client_persistent_connections on
+          persistent_request_timeout 30 seconds
+          pconn_timeout 1 minute
+          client_db on
+          server_idle_pconn_timeout 2 minutes
+          client_idle_pconn_timeout 2 minutes
+          quick_abort_min 16 KB
+          quick_abort_max 16 MB
+          quick_abort_pct 95
+          memory_cache_mode disk
+          cache_mem 256 MB
+          maximum_object_size_in_memory 512 KB
+          dns_timeout 30 seconds
+          dns_retransmit_interval 5 seconds
+          logformat dify_log %ts.%03tu %6tr %>a %Ss/%03>Hs %<st %rm %ru %[un %Sh/%<a %mt
+          access_log daemon:/var/log/squid/access.log dify_log
+          logfile_rotate 10
       - type: bind
         source: ./ssrf_proxy/docker-entrypoint.sh
         target: /docker-entrypoint-mount.sh
@@ -500,8 +533,8 @@ services:
           /usr/sbin/squid -Nz
           echo "[ENTRYPOINT] starting squid"
           /usr/sbin/squid -f /etc/squid/squid.conf -NYC 1
-      - ssrf_proxy_var_log_squid:/var/log/squid
-      - ssrf_proxy_var_spool_squid:/var/spool/squid
+      - ssrf-proxy-log:/var/log/squid
+      - ssrf-proxy-spool:/var/spool/squid
     entrypoint: ["sh", "-c", "cp /docker-entrypoint-mount.sh /docker-entrypoint.sh && sed -i 's/\\r$$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh && /docker-entrypoint.sh"]
     environment:
       HTTP_PORT: ${SSRF_HTTP_PORT:-3128}
@@ -518,8 +551,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-
-  # ============ Reverse Proxy ============
 
   nginx:
     image: nginx:latest
@@ -563,6 +594,7 @@ services:
           proxy_set_header Host $host;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Port $server_port;
           proxy_http_version 1.1;
           proxy_set_header Connection "";
           proxy_buffering off;
@@ -608,13 +640,29 @@ services:
                 include proxy.conf;
               }
 
+              location /explore {
+                proxy_pass http://web:3000;
+                include proxy.conf;
+              }
+
               location /e/ {
-                proxy_pass http://api:5001;
+                proxy_pass http://plugin_daemon:5002;
+                proxy_set_header Dify-Hook-Url $scheme://$host$request_uri;
                 include proxy.conf;
               }
 
               location / {
                 proxy_pass http://web:3000;
+                include proxy.conf;
+              }
+
+              location /mcp {
+                proxy_pass http://api:5001;
+                include proxy.conf;
+              }
+
+              location /triggers {
+                proxy_pass http://api:5001;
                 include proxy.conf;
               }
           }
@@ -631,7 +679,32 @@ services:
       - api
       - web
     healthcheck:
-      test: ["CMD", "nginx", "-t"]
+      test: ["CMD-SHELL", "curl -sf http://localhost/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  weaviate:
+    image: semitechnologies/weaviate:1.27.0
+    labels:
+      coolify.database: "true"
+    volumes:
+      - dify-weaviate-data:/var/lib/weaviate
+    environment:
+      PERSISTENCE_DATA_PATH: ${WEAVIATE_PERSISTENCE_DATA_PATH:-/var/lib/weaviate}
+      QUERY_DEFAULTS_LIMIT: ${WEAVIATE_QUERY_DEFAULTS_LIMIT:-25}
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: ${WEAVIATE_AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED:-false}
+      DEFAULT_VECTORIZER_MODULE: ${WEAVIATE_DEFAULT_VECTORIZER_MODULE:-none}
+      CLUSTER_HOSTNAME: ${WEAVIATE_CLUSTER_HOSTNAME:-node1}
+      AUTHENTICATION_APIKEY_ENABLED: ${WEAVIATE_AUTHENTICATION_APIKEY_ENABLED:-true}
+      AUTHENTICATION_APIKEY_ALLOWED_KEYS: $SERVICE_PASSWORD_WEAVIATE
+      AUTHENTICATION_APIKEY_USERS: $SERVICE_USER_WEAVIATE
+      AUTHORIZATION_ADMINLIST_ENABLED: ${WEAVIATE_AUTHORIZATION_ADMINLIST_ENABLED:-true}
+      AUTHORIZATION_ADMINLIST_USERS: $SERVICE_USER_WEAVIATE
+      DISABLE_TELEMETRY: ${WEAVIATE_DISABLE_TELEMETRY:-false}
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/v1/.well-known/live"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -648,5 +721,5 @@ volumes:
   dify-redis-data:
   dify-weaviate-data:
   dify-plugin-daemon:
-  ssrf_proxy_var_log_squid:
-  ssrf_proxy_var_spool_squid:
+  ssrf-proxy-log:
+  ssrf-proxy-spool:

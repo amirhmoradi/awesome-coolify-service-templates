@@ -1,6 +1,7 @@
 # documentation: https://github.com/obeone/simple-cors-proxy
 # slogan: Simple CORS proxy server for seamless cross-origin requests with TypingMind plugin. Easy setup.
 # tags: web,api,proxy,cors
+# logo: svgs/corsproxy.svg
 # port: 8180
 # author: @oregapam
 # repository: https://github.com/oregapam/awesome-coolify-service-templates

@@ -1,6 +1,7 @@
 # documentation: https://pocket-id.org/docs/
 # slogan: A simple and easy-to-use OIDC provider that allows users to authenticate with their passkeys to your services.
 # tags: web,api,oidc,authentication,passkeys
+# logo: svgs/pocketid-pg.svg
 # port: 1411
 # author: @oregapam
 # repository: https://github.com/oregapam/awesome-coolify-service-templates

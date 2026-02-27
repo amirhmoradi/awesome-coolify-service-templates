@@ -1,6 +1,7 @@
 # documentation: https://docs.chartdb.io/docs/welcome
 # slogan: Database diagrams editor that allows you to visualize and design your DB with a single query.
 # tags: database,diagram,sql,visualization
+# logo: svgs/chartdb.svg
 # port: 80
 # author: @oregapam
 # repository: https://github.com/oregapam/awesome-coolify-service-templates
